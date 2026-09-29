@@ -1,17 +1,12 @@
-{
-  "name": "Clinica Citas Dev",
-  "image": "mcr.microsoft.com/devcontainers/java:17",
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-  },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "vscjava.vscode-java-pack",
-        "vscjava.vscode-spring-boot-dashboard"
-      ]
-    }
-  },
-  "forwardPorts": [8080, 5432, 15672],
-  "postCreateCommand": "docker-compose up -d postgres rabbitmq"
-}
+FROM maven:3.9.4-eclipse-temurin-17-alpine AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
