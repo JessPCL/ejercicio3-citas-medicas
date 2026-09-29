@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Clínica - Reserva de Citas</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        #resultado { margin-top: 20px; padding: 10px; border-radius: 4px; display: none; }
+    </style>
+</head>
+<body>
+    <h2>Reservar Cita Médica</h2>
+    <div class="form-group">
+        <label>Nombre del Paciente:</label>
+        <input type="text" id="paciente" placeholder="Ej. Juan Pérez" required>
+    </div>
+    <div class="form-group">
+        <label>Doctor:</label>
+        <select id="doctor">
+            <option value="Dr. Smith">Dr. Smith (Medicina General)</option>
+            <option value="Dra. Gomez">Dra. Gomez (Pediatría)</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Fecha y Hora:</label>
+        <input type="datetime-local" id="fechaHora" required>
+    </div>
+    <button onclick="reservar()">Agendar Cita</button>
+    <div id="resultado"></div>
+
+    <script>
+        async function reservar() {
+            const paciente = document.getElementById('paciente').value;
+            const doctor = document.getElementById('doctor').value;
+            const fechaHora = document.getElementById('fechaHora').value;
+            const resDiv = document.getElementById('resultado');
+
+            try {
+                const response = await fetch('/api/v1/citas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paciente, doctor, fechaHora })
+                });
+
+                const data = await response.json();
+                resDiv.style.display = 'block';
+                
+                if (response.ok) {
+                    resDiv.style.backgroundColor = '#d4edda';
+                    resDiv.innerHTML = `<strong>Éxito:</strong> Cita ID ${data.id} reservada. Se ha encolado el recordatorio.`;
+                } else {
+                    resDiv.style.backgroundColor = '#f8d7da';
+                    resDiv.innerHTML = `<strong>Error:</strong> ${data.mensaje}`;
+                }
+            } catch (error) {
+                resDiv.style.display = 'block';
+                resDiv.style.backgroundColor = '#f8d7da';
+                resDiv.innerHTML = `Error de conexión.`;
+            }
+        }
+    </script>
+</body>
+</html>

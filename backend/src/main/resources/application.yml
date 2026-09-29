@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/citas_db}
+    username: ${SPRING_DATASOURCE_USERNAME:clinica_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:clinica_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    username: ${SPRING_RABBITMQ_USERNAME:admin}
+    password: ${SPRING_RABBITMQ_PASSWORD:admin_pass}
